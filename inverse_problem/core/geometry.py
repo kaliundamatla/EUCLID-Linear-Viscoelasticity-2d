@@ -99,17 +99,12 @@ class Element(ABC):
 
 class Triangle3Node(Element):
     """
-    Linear 3-node triangular element for plane stress.
-    
-    Extracted from trail_inv.py Block 5.
-    Uses constant strain (CST) formulation.
+    Linear 3-node triangular element for plane stress (CST formulation).
     """
-    
+
     def _compute_geometry(self):
         """
         Compute Be, Bd, b, detJ for 3-node triangle.
-        
-        This is the EXACT logic from trail_inv.py lines ~250-320.
         """
         if self.n_nodes != 3:
             raise ValueError(f"Triangle3Node requires 3 nodes, got {self.n_nodes}")

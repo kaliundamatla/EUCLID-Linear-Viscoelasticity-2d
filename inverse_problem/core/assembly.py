@@ -10,8 +10,6 @@ from typing import Optional
 class TimeCoefficients:
     """
     Computes BGt and BKt time-dependent coefficients.
-    
-    Extracted from trail_inv.py Block 4 (lines ~280-310).
     """
     
     def __init__(self, time: np.ndarray, tau_G: np.ndarray, tau_K: np.ndarray):
@@ -27,7 +25,6 @@ class TimeCoefficients:
         self.tau_G = tau_G
         self.tau_K = tau_K
         
-        # Compute dt array (EXACT from trail_inv.py)
         self.dt = np.ones_like(time)
         self.dt[1:] = time[1:] - time[:-1]
         
@@ -35,11 +32,10 @@ class TimeCoefficients:
         nK = len(tau_K)
         n_time = len(time)
         
-        # Initialize BGt and BKt (EXACT from trail_inv.py)
         BGt_1 = np.zeros((nG + 1, n_time))
         BKt_1 = np.zeros((nK + 1, n_time))
-        
-        # Compute BGt (EXACT from trail_inv.py lines ~285-290)
+
+        # Compute BGt
         for t in range(n_time):
             for gamma in range(1, nG + 1):
                 BGt_1[gamma, t] = 1 - (self.dt[t] / (2 * tau_G[gamma - 1] + self.dt[t]))
@@ -47,7 +43,7 @@ class TimeCoefficients:
         self.BGt = BGt_1.copy()
         self.BGt[0, :] = 1  # G_inf term
         
-        # Compute BKt (EXACT from trail_inv.py lines ~292-297)
+        # Compute BKt
         for t in range(n_time):
             for gamma in range(1, nK + 1):
                 BKt_1[gamma, t] = 1 - (self.dt[t] / (2 * tau_K[gamma - 1] + self.dt[t]))
@@ -61,8 +57,6 @@ class TimeCoefficients:
 class ElementMatrixComputer:
     """
     Computes ae matrix for a single element at a single timestep.
-    
-    Extracted from trail_inv.py Block 6 (lines ~450-520).
     """
     
     def __init__(self, mesh, material, exp_data, history, time_coeff):

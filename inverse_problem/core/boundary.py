@@ -43,8 +43,6 @@ class BoundaryCondition(ABC):
 class TopBottomForce(BoundaryCondition):
     """
     Standard boundary condition: forces on top and bottom edges.
-    
-    Extracted from trail_inv.py Block 7 (current implementation).
     """
     
     def get_boundary_edges(self, mesh) -> Dict[str, np.ndarray]:
@@ -66,7 +64,6 @@ class TopBottomForce(BoundaryCondition):
         right_nodes = mesh.get_boundary_nodes('right')
         left_nodes = mesh.get_boundary_nodes('left')
 
-        # Extract DOFs (EXACT from trail_inv.py)
         edges = {}
 
         # Bottom
@@ -164,9 +161,8 @@ class BottomForceBC(BoundaryCondition):
 class BoundaryAssembler:
     """
     Assembles final system matrices A_exp and R_exp.
-    
+
     Supports both interior and boundary assembly with configurable weights.
-    Extracted from trail_inv.py Block 7.
     """
     
     def __init__(self, 
@@ -275,8 +271,7 @@ class BoundaryAssembler:
         """
         Assemble boundary equations (only boundary DOFs).
 
-        EXACT extraction from trail_inv.py Block 7 (lines ~600-680).
-        Uses FIXED edge order for outer boundaries, appends hole boundaries.
+        Uses fixed edge order for outer boundaries, appends hole boundaries.
 
         Returns:
             (A_bnd, R_bnd) matrices stacked over time
@@ -307,12 +302,11 @@ class BoundaryAssembler:
         print("\nAssembling boundary equations...")
         print(f"  Edges: {[name for name, _ in edge_list]}")
     
-        # Initialize (EXACT from trail_inv.py)
         A_bnd = [np.zeros((n_edges, n_params)) for _ in range(1, n_time)]
         R_bnd = [np.zeros(n_edges) for _ in range(1, n_time)]
-    
-        # Set force boundary conditions - only for t=1 onwards(EXACT from trail_inv.py)
-        for t_idx, t in enumerate(range(1, n_time)):  # ← CHANGED
+
+        # Set force boundary conditions for t=1 onwards
+        for t_idx, t in enumerate(range(1, n_time)):
             for edge_idx, (edge_name, _) in enumerate(edge_list):
                 R_bnd[t_idx][edge_idx] = self.bc.get_force_values(
                     edge_name, t, self.exp_data.F
@@ -320,29 +314,27 @@ class BoundaryAssembler:
     
         # Assembly loop - only for t=1 onwards
         print("  Assembling contributions from elements...")
-        for t_idx, t in enumerate(range(1, n_time)):  # ← CHANGED
+        for t_idx, t in enumerate(range(1, n_time)):
             for e, element in enumerate(self.mesh.elements):
                 ae_et = self.system_assembler.ae[e][t]
-        
-                # For each node in element (EXACT from trail_inv.py)
+
                 for nN in range(element.n_nodes):
                     node = element.nodes[nN]
                     dof_x = 2 * node.id
                     dof_y = 2 * node.id + 1
             
-                    # Check which edge this DOF belongs to (FIXED ORDER)
                     for edge_idx, (edge_name, edge_dofs) in enumerate(edge_list):
                         if dof_x in edge_dofs:
                             A_bnd[t_idx][edge_idx, :] += ae_et[2*nN, :]
                         if dof_y in edge_dofs:
                             A_bnd[t_idx][edge_idx, :] += ae_et[2*nN + 1, :]
     
-            if (t + 1) % 200 == 0 or t == 1:  # ← CHANGED
+            if (t + 1) % 200 == 0 or t == 1:
                 print(f"  ✓ Timestep {t+1}/{n_time}")
 
-        # Stack over time (EXACT from trail_inv.py)
-        A_bnd_stacked = np.vstack([A_bnd[t_idx] * self.lambda_r for t_idx in range(len(A_bnd))])  # ← CHANGED
-        R_bnd_stacked = np.hstack([R_bnd[t_idx] * self.lambda_r for t_idx in range(len(R_bnd))])  # ← CHANGED
+        # Stack over time
+        A_bnd_stacked = np.vstack([A_bnd[t_idx] * self.lambda_r for t_idx in range(len(A_bnd))])
+        R_bnd_stacked = np.hstack([R_bnd[t_idx] * self.lambda_r for t_idx in range(len(R_bnd))])
 
         print(f"✓ Boundary assembly complete: A_bnd shape={A_bnd_stacked.shape}")
         print(f"  Used timesteps: {1} to {n_time-1} ({n_time-1} frames)")

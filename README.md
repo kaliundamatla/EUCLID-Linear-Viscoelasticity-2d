@@ -429,7 +429,7 @@ Raw DIC displacement fields were measured at Fraunhofer Institut für Werkstoffm
   year   = {2026},
   month  = {March},
   note   = {Supervised by Chang Kuo-I, Fraunhofer IWM. Code available at
-            https://github.com/kaliundamatla/EUCLID-Linear-Viscoelsticity-2D}
+            https://github.com/kaliundamatla/EUCLID-Linear-Viscoelsticity-2d}
 }
 ```
 

@@ -31,7 +31,6 @@ class ParameterSet:
         nG = material.nG
         nK = material.nK
         
-        # Extract parameters (EXACT from trail_inv.py)
         self.G_inf = theta[0]
         self.G_params = theta[1:nG+1]
         self.K_inf = theta[nG+1]
@@ -136,10 +135,8 @@ class Solver(ABC):
 class NNLSSolver(Solver):
     """
     Non-negative least squares solver.
-    
+
     Solves: min ||A @ θ - b||²  subject to θ ≥ 0
-    
-    EXACT extraction from trail_inv.py Block 8.
     """
     
     def __init__(self):
@@ -151,9 +148,7 @@ class NNLSSolver(Solver):
     def solve(self, A: np.ndarray, b: np.ndarray) -> np.ndarray:
         """
         Solve using bounded least squares (NNLS).
-        
-        EXACT from trail_inv.py lines ~720-740.
-        
+
         Args:
             A: System matrix (m × n)
             b: Right-hand side (m,)
@@ -169,12 +164,10 @@ class NNLSSolver(Solver):
         print(f"\nMethod: lsq_linear with bounds=[0, inf]")
         print("Solving...")
         
-        # Solve NNLS (EXACT from trail_inv.py)
         self.result = lsq_linear(A, b, bounds=(0, np.inf), method='bvls', verbose=1)
-        
+
         theta = self.result.x
-        
-        # Compute metrics (EXACT from trail_inv.py)
+
         self.residual_norm = np.linalg.norm(A @ theta - b)
         self.mse = self.residual_norm**2 / len(b)
         

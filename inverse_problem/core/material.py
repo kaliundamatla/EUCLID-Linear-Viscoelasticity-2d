@@ -16,8 +16,6 @@ class MaterialModel:
     
     This class defines the STRUCTURE (tau values, projections),
     not the actual moduli values (G, K are unknowns to be identified).
-    
-    Extracted from trail_inv.py Block 2.
     """
     
     def __init__(self, 
@@ -56,8 +54,7 @@ class MaterialModel:
     def _setup_projections(self):
         """
         Setup projection matrices for deviatoric-volumetric split.
-        
-        From trail_inv.py Block 3.
+
         Plane stress: 3 components [ε11, ε22, γ12]
         Plane strain: 4 components [ε11, ε22, ε33, γ12]
         """

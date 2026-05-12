@@ -57,7 +57,6 @@ def main():
     # ========== STEP 1: CREATE INVERSE PROBLEM ==========
     print("\n[1/3] Creating inverse problem...")
 
-    # Data path: synthetic_data/ for forward-solver generated experiments
     data_path = Path(__file__).parent.parent / "standard_FE_dataset"
     print(f"  Data source: {data_path / str(EXPERIMENT_NUMBER)}")
 
